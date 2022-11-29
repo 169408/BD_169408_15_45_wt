@@ -31,7 +31,7 @@ UPDATE postac SET id_statku = 'mryt' WHERE rodzaj = 'wiking' and nazwa LIKE '%a%
 
 UPDATE statek SET max_ladownosc = max_ladownosc * 0.7 WHERE data_wodowania BETWEEN '1900-01-01' AND '1999-12-31';
 
-ALTER TABLE postac ADD CHECK (wiek < 1000);
+ALTER TABLE postac ADD CHECK (wiek <= 1000);
 
 Zadanie 4
 
