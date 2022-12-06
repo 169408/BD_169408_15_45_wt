@@ -12,4 +12,24 @@ SELECT rodzaj, SUM(ilosc) AS ilosc_wszystkiego, COUNT(distinct(nazwa)) AS ilosc_
 
 Zadanie 3
 
-SELECT idKreatury, SUM(ilosc) AS ilosc_zasobow FROM ekwipunek GROUP BY idKreatury;
+SELECT kreatura.idKreatury, kreatura.nazwa, SUM(ekwipunek.ilosc) AS ilosc_zasobow From kreatura CROSS JOIN ekwipunek ON kreatura.idKreatury = ekwipunek.idKreatury GROUP BY idKreatury;
+
+SELECT kreatura.idKreatury, kreatura.nazwa, zasob.nazwa FROM kreatura LEFT JOIN ekwipunek ON kreatura.idKreatury = ekwipunek.idKreatury LEFT JOIN zasob ON zasob.idZasobu = ekwipunek.idZasobu;
+
+SELECT kreatura.idKreatury, kreatura.nazwa, ekwipunek.ilosc FROM kreatura LEFT JOIN ekwipunek ON kreatura.idKreatury = ekwipunek.idKreatury WHERE ekwipunek.ilosc IS NULL GROUP BY idKreatury;
+
+Zadanie 4
+
+SELECT kreatura.nazwa, zasob.nazwa FROM kreatura LEFT JOIN ekwipunek ON kreatura.idKreatury = ekwipunek.idKreatury LEFT JOIN zasob ON zasob.idZasobu  = ekwipunek.idZasobu WHERE kreatura.dataUr BETWEEN '1670-01-01' AND '1679-12-31' AND kreatura.rodzaj = 'wiking';
+
+SELECT kreatura.nazwa FROM kreatura JOIN ekwipunek ON kreatura.idKreatury = ekwipunek.idKreatury JOIN zasob ON ekwipunek.idZasobu = zasob.idZasobu WHERE zasob.rodzaj = 'jedzenie' ORDER BY dataUr DESC LIMIT 5;
+
+SELECT kreatura.nazwa, kolega.nazwa FROM kreatura INNER JOIN kreatura kolega ON kreatura.idKreatury + 5 = kolega.idKreatury;
+
+Zadanie 5
+
+SELECT kreatura.rodzaj, AVG(ekwipunek.ilosc*zasob.waga) as 'srednia waga zasobuw' FROM kreatura LEFT JOIN ekwipunek ON kreatura.idKreatury = ekwipunek.idKreatury LEFT JOIN zasob ON zasob.idZasobu = ekwipunek.idZasobu WHERE kreatura.rodzaj != 'malpa' AND kreatura.rodzaj != 'waz' AND ekwipunek.ilosc < 30 GROUP BY kreatura.rodzaj;
+
+SELECT kreatura.rodzaj, kreatura.nazwa, kreatura.dataUr FROM kreatura WHERE dataUr IN (SELECT MIN(dataUr) AS min FROM kreatura GROUP BY rodzaj) OR dataUr IN (SELECT MAX(dataUr) AS max FROM kreatura GROUP BY rodzaj) ORDER BY rodzaj;
+
+
