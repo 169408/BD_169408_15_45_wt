@@ -8,7 +8,7 @@ Zadanie 2
 
 SELECT rodzaj, SUM(waga) AS 'suma wag' FROM zasob GROUP BY rodzaj;
 SELECT nazwa, AVG(waga) AS srednia_waga, SUM(ilosc) AS ilosc_wszystkiego FROM zasob GROUP BY nazwa HAVING ilosc_wszystkiego >= 4 AND srednia_waga > 10;
-SELECT rodzaj, SUM(ilosc) AS ilosc_wszystkiego, COUNT(distinct(nazwa)) AS ilosc_nazw FROM zasob GROUP BY rodzaj HAVING ilosc_wszystkiego > 1;
+SELECT rodzaj, SUM(ilosc) AS ilosc_wszystkiego, COUNT(distinct(nazwa)) AS ilosc_nazw FROM zasob WHERE ilosc > 1 GROUP BY rodzaj;
 
 Zadanie 3
 
