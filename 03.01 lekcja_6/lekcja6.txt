@@ -1,0 +1,71 @@
+Zadanie 1
+
+DELIMITER $$
+
+CREATE TRIGGER tr_ins_kreatura BEFORE INSERT ON kreatura FOR EACH ROW BEGIN IF NEW.waga <= 0 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'waga nie moze byc mniejsza lub rowna 0';
+END IF;
+END$$
+
+CREATE TRIGGER tr_upd_kreatura BEFORE UPDATE ON kreatura FOR EACH ROW BEGIN IF NEW.waga <= 0 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'waga nie moze byc mniejsza lub rowna 0';
+END IF;
+END$$
+
+DELIMITER ;
+
+INSERT INTO kreatura VALUES(21, 'Gord', 'wiking', '1670-01-01', 0, 50);
+INSERT INTO kreatura VALUES(21, 'Gord', 'wiking', '1670-01-01', 44, 50);
+
+Zadanie 2
+
+DELIMITER $$
+
+CREATE TRIGGER tr_rekordy BEFORE DELETE ON wyprawa FOR EACH ROW INSERT INTO archiwum_wypraw(id_wyprawy, nazwa, data_rozpoczecia, data_zakonczenia, kierownik) VALUES(OLD.id_wyprawy, OLD.nazwa, OLD.data_rozpoczecia, OLD.data_zakonczenia, (SELECT nazwa FROM kreatura WHERE idKreatury = OLD.kierownik))$$
+
+DELIMITER ;
+
+Zadanie 3
+
+DROP PROCEDURE IF EXISTS eliksir_sily;
+
+DELIMITER $$
+
+CREATE PROCEDURE eliksir_sily (IN id_kreatury INT) BEGIN UPDATE kreatura SET udzwig = udzwig*1.2 WHERE idKreatury = id_kreatury;
+END$$
+
+DELIMITER ;
+CALL eliksir_sily(21);
+
+CREATE FUNCTION tekst (text VARCHAR(30)) RETURNS VARCHAR(50) DETERMINISTIC RETURN UCASE(text);
+SELECT tekst("bjorn is OUR man");
+
+Zadanie 4
+
+CREATE TABLE system_alarmowy(id_alarmu int auto_increment, PRIMARY KEY(id_alarmu), wiadomosc varchar(40));
+
+DELIMITER $$
+
+CREATE TRIGGER syster_alarmow AFTER INSERT ON wyprawa FOR EACH ROW BEGIN IF NEW.id_wyprawy IN (SELECT idWyprawy FROM etapy_wyprawy WHERE sektor IN (SELECT id_sektora FROM sektor WHERE nazwa = 'Chatka dziadka')) AND NEW.id_wyprawy IN (SELECT id_wyprawy FROM uczestnicy WHERE id_uczestnika IN (SELECT idKreatury FROM kreatura WHERE nazwa = 'Tesciowa')) THEN INSERT INTO system_alarmowy(wiadomosc) VALUES('Tesciowa nadchodzi !!!'); END IF; END$$
+
+DELIMITER ;
+
+Zadanie 5
+
+DROP PROCEDURE IF EXISTS kreat_sila;
+
+DELIMITER $$
+
+CREATE PROCEDURE kreat_sila (OUT srednai INT, OUT sume INT, OUT maks INT) BEGIN SELECT AVG(udzwig) INTO srednia FROM kreatura; SELECT SUM(udzwig) INTO sume FROM kreatura; SELECT MAX(udzwig) INTO maks FROM kreatura; END$$
+
+DELIMITER ;
+
+CALL kreat_sila(@srednia, @sume, @maks);
+
+DROP PROCEDURE IF EXISTS sektor_wyprawy;
+
+DELIMITER $$
+
+CREATE PROCEDURE sektor_wyprawy (IN idwyp INT) BEGIN SELECT sektor.id_sektora, sektor.nazwa, CONCAT(sektor.wspolrzedna_x, sektor.wspolrzedna_y) AS 'numer_sektora' FROM sektor JOIN etapy_wyprawy ON sektor.id_sektora = etapy_wyprawy.sektor JOIN wyprawa ON etapy_wyprawy.idWyprawy = wyprawa.id_wyprawy WHERE wyprawa.id_wyprawy = idwyp ORDER BY etapy_wyprawy.kolejnosc; END$$
+
+DELIMITER ;
+
+CALL sektor_wyprawy(1);
